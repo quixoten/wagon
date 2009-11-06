@@ -4,12 +4,13 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "wagon"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "quixoten@gmail.com"
-    gem.homepage = "http://github.com/quixoten/wagon"
+    gem.name = "threetrieslater-wagon"
+    gem.summary = %Q{Create a PDF from the lds.org ward Photo Directory.}
+    gem.description = %Q{Provided a valid lds.org username and password, Wagon will download all the information from the Photo Directory page and compile it into a convenient PDF.}
+    gem.email = "devin@threetrieslater.com"
+    gem.homepage = "http://github.com/threetrieslater/wagon"
     gem.authors = ["Devin Christensen"]
+    gem.bindir = 'bin'
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
     gem.add_development_dependency "cucumber", ">= 0"
