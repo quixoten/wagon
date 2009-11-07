@@ -27,11 +27,11 @@ module Wagon
       options = {:columns => 7, :rows => 6, :padding => 2, :font_size => 8, :address => true, :phone_number => true, :email => true}.merge(options)
       
       Prawn::Document.new(:skip_page_creation => true, :left_margin => 10, :right_margin => 10, :top_margin => 20, :bottom_margin => 10) do |pdf|
-        columns       = options[:columns]
-        rows          = options[:rows]
-        padding       = options[:padding]
-        grid_width    = pdf.bounds.width / columns.to_f
-        grid_height   = pdf.bounds.height / rows.to_f
+        columns       = options[:columns].to_f
+        rows          = options[:rows].to_f
+        padding       = options[:padding].to_f
+        grid_width    = pdf.bounds.width / columns
+        grid_height   = pdf.bounds.height / rows
         box_width     = grid_width - (padding * 2)
         box_height    = grid_height - (padding * 2)
         pages         = (households.size.to_f / (columns * rows)).ceil()

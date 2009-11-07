@@ -85,13 +85,16 @@ class WagonApp
     opts.on('-v', '--version')  { output_version ; exit 0 }
     opts.on('-h', '--help')     { output_help }
     opts.on('-V', '--verbose')  { @options.verbose = true }
-    opts.on('-t', '--title')    { |title| @options.title = title }
+    opts.on('-t', '--title=TITLE')      { |title| @options.title = title }
+    opts.on('-r', '--rows=ROWS')        { |rows| @options.rows = rows }
+    opts.on('-c', '--columns=COLUMNS')  { |columns| @options.columns = columns }
+    opts.on('-f', '--font-size=SIZE')   { |size| @options.font_size = size }
     opts.on('--page-numbers')   { @options.page_numbering = true }
     opts.on('--date')           { @options.include_date = true }
-    opts.on('--no-email')       { @options.email = false }
+    opts.on('--no-picture')     { @options.picture = false }
     opts.on('--no-address')     { @options.address = false }
     opts.on('--no-phone')       { @options.phone_number = false }
-    opts.on('--no-picture')     { @options.picture = false }
+    opts.on('--no-email')       { @options.email = false }
           
     opts.parse!(@arguments) rescue return false
     @options.output_file = @arguments.last unless @arguments.empty?
