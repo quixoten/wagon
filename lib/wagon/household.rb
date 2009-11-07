@@ -19,6 +19,10 @@ module Wagon
       self.individual? ? "#{members.first.name} #{@name}" : "#{@name} Household"
     end
     
+    def reversed_name
+      self.individual? ? "#{@name}, #{members.first.name}" : name
+    end
+    
     def individual?
       members.count == 1
     end
@@ -29,6 +33,14 @@ module Wagon
     
     def image_data
       @image_data ||= image_path.to_s.empty? ? "" : connection.get(image_path)
+    end
+    
+    def <=>(other)
+      if has_image? == other.has_image?
+        reversed_name <=> other.reversed_name
+      else
+        has_image? ? -1 : 1
+      end
     end
     
     def self.create_from_td(connection, td)

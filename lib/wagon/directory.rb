@@ -16,7 +16,7 @@ module Wagon
     end
     
     def households
-      photo_directory.households
+      @households ||= photo_directory.households.sort
     end
     
     def members
@@ -54,7 +54,7 @@ module Wagon
                   information.push(household.phone_number) if options[:phone_number]
                   information.push(household.members.first.email) if options[:email]
                   
-                  pdf.image(household.image_path ? StringIO.new(household.image_data) : './extra/placeholder.jpg',
+                  pdf.image(household.has_image? ? StringIO.new(household.image_data) : './extra/placeholder.jpg',
                             :position => :center, :fit => [box_width, box_height - (padding*2 + pdf.font.height*info_lines)] )
                   
                   pdf.move_down(padding)
