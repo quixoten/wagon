@@ -1,6 +1,7 @@
 require 'net/http'
 require 'net/https'
 require 'uri'
+require 'digest/sha1'
 require 'wagon/ward'
 
 module Wagon
@@ -26,9 +27,28 @@ module Wagon
     def ward
       @ward ||= Ward.new(self, home_path)
     end
-        
+    
     def get(path)
+      Connection.perform_caching? ? get_with_caching(path) : get_without_caching(path)
+    end
+    
+    def get_without_caching(path)
       _http.request(Net::HTTP::Get.new(path, {'Cookie' => @cookies || ''})).body
+    end
+    
+    def get_with_caching(path)
+      cache_path = File.join(Wagon::BASE_PATH, 'cache', Digest::SHA1.hexdigest(path) + ".cache")
+      return open(cache_path).read if File.exists?(cache_path)
+      open(cache_path, "w").write(data = get_without_caching(path))
+      data
+    end
+    
+    def self.perform_caching?
+      @@perform_caching ||= true
+    end
+    
+    def self.perform_caching(true_or_false)
+      @@perform_caching = true_or_false
     end
 
     def post(path, data)

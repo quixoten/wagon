@@ -9,21 +9,8 @@ require 'spec/autorun'
 require 'rubygems'
 require 'wagon'
 require 'highline/import'
-require 'digest/sha1'
 
 $user = nil
-
-class Wagon::Connection
-  def get_with_caching(path)
-    cache_path = File.join(BASE_PATH, 'cache', Digest::SHA1.hexdigest(path) + ".cache")
-    return open(cache_path).read if File.exists?(cache_path)
-    open(cache_path, "w").write(data = get_without_caching(path))
-    data
-  end
-  
-  alias :get_without_caching :get
-  alias :get :get_with_caching
-end
 
 def establish_connection
   username = ask("What is your lds.org username? ")
