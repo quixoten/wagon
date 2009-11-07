@@ -1,5 +1,3 @@
-require 'prawn'
-require 'wagon/page'
 require 'wagon/directory'
 
 module Wagon
@@ -22,11 +20,7 @@ module Wagon
     end
     
     def to_pdf(options)
-      Prawn::Document.new() do |pdf|
-        households.each do |household|
-          pdf.text household.name
-        end
-      end
+      directory.to_pdf(options)
     end
   end
 end

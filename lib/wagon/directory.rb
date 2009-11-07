@@ -1,5 +1,5 @@
-require 'wagon/page'
 require 'wagon/photo_directory'
+require 'prawn'
 
 module Wagon
   class Directory < Page

@@ -1,4 +1,4 @@
-require 'wagon/page'
+require 'wagon/household'
 
 module Wagon
   class PhotoDirectory < Page
@@ -20,8 +20,8 @@ module Wagon
     
     private
     def _parse_households
-      self.each('body > table > tr > td.eventsource[@width="25%"]') do |household|
-        puts household.inner_text
+      self.search('body > table > tr > td.eventsource[@width="25%"]').collect do |household_td|
+        household = Household.create_from_td(connection, household_td)
       end
     end
   end

@@ -20,3 +20,4 @@ pkg
 
 ## PROJECT::SPECIFIC
 spec/user.dat
+*.pdf

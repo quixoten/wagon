@@ -8,6 +8,7 @@ describe "Wagon::PhotoDirectory" do
   
   it "should parse out the households correctly" do
     @page.households.should have_at_least(10).items
+    puts @page.households.join("\n")
   end
   
 end
