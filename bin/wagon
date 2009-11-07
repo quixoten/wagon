@@ -14,20 +14,20 @@
 #   wagon [options] [output_file]
 #
 # == Options
-#   -h, --help       Displays help message
-#   -v, --version    Display the version, then exit
-#   -V, --verbose    Verbose output
-#   -t, --title      Override the default title with your own
-#   --rows           Number of rows per page (default is 6)
-#   --columns        Number of columns per page (default is 7)
-#   --padding        Padding between households (default is 2)
-#   --font-size      Primary font size (default is 8)
-#   --page-numbers   Include page numbers in the footer, e.g. (1 of 3)
-#   --date           Include the current date in the footer
-#   --no-picture     Do not include pictures
-#   --no-address     Do not include street addresses
-#   --no-phone       Do not include phone numbers
-#   --no-email       Do not include email addresses
+#   -h, --help        Displays help message
+#   -v, --version     Display the version, then exit
+#   -V, --verbose     Verbose output
+#   -t, --title       Override the default title with your own
+#   -r, --rows        Number of rows per page (default is 6)
+#   -c, --columns     Number of columns per page (default is 7)
+#   -p, --padding     Padding between households (default is 2)
+#   -f, --font-size   Primary font size (default is 8)
+#   --page-numbers    Include page numbers in the footer, e.g. (1 of 3)
+#   --date            Include the current date in the footer
+#   --no-picture      Do not include pictures
+#   --no-address      Do not include street addresses
+#   --no-phone        Do not include phone numbers
+#   --no-email        Do not include email addresses
 #
 # == Copyright
 #   Copyright (c) 2009 Devin Christensen. Licensed under the MIT License:
@@ -52,6 +52,7 @@ class WagonApp
     @options.title        = nil
     @options.rows         = 6
     @options.columns      = 7
+    @options.padding      = 2
     @options.font_size    = 8
     @options.page_numbers = false
     @options.include_date = false
@@ -88,6 +89,7 @@ class WagonApp
     opts.on('-t', '--title=TITLE')      { |title| @options.title = title }
     opts.on('-r', '--rows=ROWS')        { |rows| @options.rows = rows }
     opts.on('-c', '--columns=COLUMNS')  { |columns| @options.columns = columns }
+    opts.on('-p', '--padding=PADDING')  { |padding| @options.padding = padding }
     opts.on('-f', '--font-size=SIZE')   { |size| @options.font_size = size }
     opts.on('--page-numbers')   { @options.page_numbering = true }
     opts.on('--date')           { @options.include_date = true }
@@ -129,13 +131,16 @@ class WagonApp
     
     user = Wagon::connect(username, password)
     
-    puts "\nConnected successfully!\n"
+    puts "\nAlright, we're in!"
     puts "I'm gonna go ahead and create that PDF for ya now."
-    puts "It might take a few minutes to gather all the info."
-    puts "So grab a crisp cool beverage, sit back and relax."
+    puts "It might take a few minutes to gather all the info"
+    puts "so grab a crisp cool beverage, sit back and relax."
+    puts "I'll take it from here."
     
     directory = user.ward.to_pdf( @options.marshal_dump )
     directory.render_file(@options.output_file)
+    
+    puts "\nFinished. Enjoy.\n"
     
   rescue Wagon::AuthenticationFailure
     puts "\nThe username and password combination you entered is invalid."

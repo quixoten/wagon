@@ -36,7 +36,7 @@ module Wagon
         box_height    = grid_height - (padding * 2)
         pages         = (households.size.to_f / (columns * rows)).ceil()
         info_lines    = 1 + [:address, :phone_number, :email].inject(0) { |sum, item| sum += item ? 1 : 0 }
-        pdf.font_size = options[:font_size]
+        pdf.font_size = options[:font_size].to_i
         
         (0...pages).each do |page|
           pdf.start_new_page
