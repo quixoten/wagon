@@ -1,8 +1,6 @@
 = Wagon
 
-Provided a valid lds.org username and password
-Wagon will download the information and pictures from the "Photo Directory"
-page and compile it into a convenient PDF.
+Provided a valid lds.org username and password Wagon will download the information and pictures from the "Photo Directory" page and compile it into a convenient PDF.
 
 == Copyright
 

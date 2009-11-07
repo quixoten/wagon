@@ -1,0 +1,136 @@
+#!/usr/bin/env ruby
+
+# == Synopsis 
+#   Create a PDF from your wards photo directory on lds.org
+#
+# == Examples
+#   Output a file named "photo_directory.pdf" to the current directory.
+#     wagon
+#
+#   Other examples:
+#     wagon --title="Ward Menu"
+#
+# == Usage 
+#   wagon [options] [output_file]
+#
+# == Options
+#   -h, --help       Displays help message
+#   -v, --version    Display the version, then exit
+#   -V, --verbose    Verbose output
+#   -t, --title      Override the default title with your own
+#   --page-numbers   Include page numbers in the footer, e.g. (1 of 3)
+#   --date           Include the current date in the footer
+#   --no-email       Do not include email addresses
+#   --no-address     Do not include street addresses
+#   --no-phone       Do not include phone numbers
+#   --no-picture     Do not include pictures
+#
+# == Copyright
+#   Copyright (c) 2009 Devin Christensen. Licensed under the MIT License:
+#   http://www.opensource.org/licenses/mit-license.php
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+
+require 'optparse' 
+require 'rdoc/usage'
+require 'ostruct'
+require 'wagon'
+require 'highline/import'
+
+class WagonApp
+  def initialize(arguments, stdin)
+    @arguments = arguments
+    @stdin = stdin
+    @options = OpenStruct.new()
+    
+    # Set defaults
+    @options.verbose      = false
+    @options.title        = nil
+    @options.page_numbers = false
+    @options.include_date = false
+    @options.email        = true
+    @options.address      = true
+    @options.phone        = true
+    @options.picture      = true
+    @options.output_file  = "./photo_directory.pdf"
+  end
+
+  def run        
+    if arguments_valid? 
+      puts "Start at #{DateTime.now}\n\n" if @options.verbose
+      
+      output_options if @options.verbose # [Optional]
+            
+      process
+      
+      puts "\nFinished in #{DateTime.now}" if @options.verbose
+      
+    else
+      output_usage
+    end
+      
+  end
+  
+  protected
+  def arguments_valid?
+    # Specify options
+    opts = OptionParser.new 
+    opts.on('-v', '--version')  { output_version ; exit 0 }
+    opts.on('-h', '--help')     { output_help }
+    opts.on('-V', '--verbose')  { @options.verbose = true }
+    opts.on('-t', '--title')    { |title| @options.title = title }
+    opts.on('--page-numbers')   { @options.page_numbering = true }
+    opts.on('--date')           { @options.include_date = true }
+    opts.on('--no-email')       { @options.email = false }
+    opts.on('--no-address')     { @options.address = false }
+    opts.on('--no-phone')       { @options.phone = false }
+    opts.on('--no-picture')     { @options.picture = false }
+          
+    opts.parse!(@arguments) rescue return false
+    @options.output_file = @arguments.last unless @arguments.empty?
+    
+    true
+  end
+  
+  def output_options
+    puts "Options:\n"
+    
+    @options.marshal_dump.each do |name, val|        
+      puts "  #{name} = #{val}"
+    end
+  end
+  
+  def output_help
+    output_version
+    RDoc::usage()
+  end
+  
+  def output_usage
+    RDoc::usage('usage') # gets usage from comments above
+  end
+  
+  def output_version
+    puts "#{File.basename(__FILE__)} version #{Wagon::VERSION}"
+  end
+  
+  def process
+    username = ask("What is your lds.org username? ")
+    password = ask("What is your lds.org password? ") { |q| q.echo = "*" }
+    
+    user = Wagon::connect(username, password)
+    directory = user.ward.to_pdf( @options.marshal_dump )
+    directory.render_file(@options.output_file)
+    
+  rescue Wagon::AuthenticationFailure
+    puts "\nThe username and password combination you entered is invalid."
+  rescue
+    if @options.verbose
+      raise 
+    else
+      puts "\nI encountered an unknown problem, and I don't know what to do. :("
+    end
+  end
+end
+
+app = WagonApp.new(ARGV, STDIN)
+app.run

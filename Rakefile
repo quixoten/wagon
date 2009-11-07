@@ -11,6 +11,9 @@ begin
     gem.homepage = "http://github.com/threetrieslater/wagon"
     gem.authors = ["Devin Christensen"]
     gem.bindir = 'bin'
+    gem.add_dependency "nokogiri", ">= 1.4.0"
+    gem.add_dependency "highline", ">= 1.5.1"
+    gem.add_dependency "prawn", ">= 0.5.1"
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
     gem.add_development_dependency "cucumber", ">= 0"
