@@ -2,6 +2,9 @@ require 'wagon/directory'
 
 module Wagon
   class Ward < Page
+    def name
+      @name ||= self.at('a.channeltitle[href^="/units/home"]').inner_text.strip
+    end
     
     def directory_path
       @directory_path ||= self.at('a.directory[href^="/units/a/directory"]')['href']

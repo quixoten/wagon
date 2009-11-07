@@ -11,4 +11,8 @@ describe "Wagon::Directory" do
     @page.photo_directory_path.should match(%r{^/units/a/directory/photoprint})
   end
   
+  it "should be able to generate a pdf" do
+    @page.to_pdf.render_file("./photo_directory.pdf")
+  end
+  
 end

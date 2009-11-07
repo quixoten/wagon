@@ -6,6 +6,10 @@ describe "Wagon::Ward" do
     @page = Wagon::Ward.new($user, $user.home_path)
   end
   
+  it "should have a name" do
+    @page.name.to_s.should_not be_empty
+  end
+  
   it "should find the directory link" do
     @page.directory_path.should_not be_nil
     @page.directory_path.should match(%r{^/units/a/directory})

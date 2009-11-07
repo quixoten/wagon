@@ -7,11 +7,24 @@ require 'base64'
 module Wagon
   class Household
     attr_reader :connection
-    attr_accessor :name, :address, :phone_number, :image_path, :members
+    attr_writer :name
+    attr_accessor :address, :phone_number, :image_path, :members
     
     def initialize(connection)
       @members = []
       @connection = connection
+    end
+    
+    def name
+      self.individual? ? "#{members.first.name} #{@name}" : "#{@name} Household"
+    end
+    
+    def individual?
+      members.count == 1
+    end
+    
+    def has_image?
+      !image_path.to_s.empty?
     end
     
     def image_data
