@@ -4,7 +4,7 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "threetrieslater-wagon"
+    gem.name = "wagon"
     gem.summary = %Q{Create a PDF from the lds.org ward Photo Directory.}
     gem.description = %Q{Provided a valid lds.org username and password, Wagon will download all the information from the Photo Directory page and compile it into a convenient PDF.}
     gem.email = "devin@threetrieslater.com"
