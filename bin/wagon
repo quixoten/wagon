@@ -128,6 +128,12 @@ class WagonApp
     password = ask("What is your lds.org password? ") { |q| q.echo = "*" }
     
     user = Wagon::connect(username, password)
+    
+    puts "\nConnected successfully!\n"
+    puts "I'm gonna go ahead and create that PDF for ya now."
+    puts "It might take a few minutes to gather all the info."
+    puts "So grab a crisp cool beverage, sit back and relax."
+    
     directory = user.ward.to_pdf( @options.marshal_dump )
     directory.render_file(@options.output_file)
     
