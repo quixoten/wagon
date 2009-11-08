@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '../../spec_helper')
 describe "Wagon::Directory" do
   
   before(:each) do
-    @page = Wagon::Directory.new($user, $user.ward.directory_path)
+    @page = Wagon::Directory.new($user, $user.ward.directory_path, $user.ward)
   end
   
   it "should find the photo directory link" do

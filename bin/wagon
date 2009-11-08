@@ -7,7 +7,7 @@
 #   -h, --help        Displays this help message
 #   -v, --version     Display the version, then exit
 #   -V, --verbose     Verbose output
-#   -t, --title       Override the default title with your own
+#   -t, --title       The title displayed on each page (default is the ward name)
 #   -r, --rows        Number of rows per page (default is 6)
 #   -c, --columns     Number of columns per page (default is 7)
 #   -p, --padding     Padding between households (default is 2)

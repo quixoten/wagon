@@ -11,7 +11,7 @@ module Wagon
     end
     
     def directory
-      @directory ||= Directory.new(connection, directory_path)
+      @directory ||= Directory.new(connection, directory_path, self)
     end
     
     def households

@@ -4,8 +4,8 @@ module Wagon
   class Page
     attr_reader :connection
     
-    def initialize(connection, url)
-      @connection, @url = connection, url
+    def initialize(connection, url, parent = nil)
+      @connection, @url, @parent = connection, url, parent
     end
     
     def source
