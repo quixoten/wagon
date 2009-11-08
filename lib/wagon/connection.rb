@@ -11,6 +11,7 @@ module Wagon
   class Connection
     HOST        = 'secure.lds.org'
     LOGIN_PATH  = '/units/a/login/1,21568,779-1,00.html?URL='
+    CACHE_PATH  = File.join(File.expand_path('~'), '.wagon_cache')
     
     def initialize(username, password)
       response    = post(LOGIN_PATH, 'username' => username, 'password' => password)
@@ -37,7 +38,8 @@ module Wagon
     end
     
     def get_with_caching(path)
-      cache_path = File.join(Wagon::BASE_PATH, 'cache', Digest::SHA1.hexdigest(path) + ".cache")
+      FileUtils::mkdir(CACHE_PATH) unless File.directory?(CACHE_PATH)
+      cache_path = File.join(CACHE_PATH, Digest::SHA1.hexdigest(path) + ".cache")
       return open(cache_path).read if File.exists?(cache_path)
       open(cache_path, "w").write(data = get_without_caching(path))
       data
