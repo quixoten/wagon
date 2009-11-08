@@ -1,20 +1,10 @@
 #!/usr/bin/env ruby
 
-# == Synopsis 
-#   Create a PDF from your wards photo directory on lds.org
-#
-# == Examples
-#   Output a file named "photo_directory.pdf" to the current directory.
-#     wagon
-#
-#   Other examples:
-#     wagon --title="Ward Menu"
-#
 # == Usage 
 #   wagon [options] [output_file]
 #
 # == Options
-#   -h, --help        Displays help message
+#   -h, --help        Displays this help message
 #   -v, --version     Display the version, then exit
 #   -V, --verbose     Verbose output
 #   -t, --title       Override the default title with your own
@@ -30,8 +20,7 @@
 #   --no-email        Do not include email addresses
 #
 # == Copyright
-#   Copyright (c) 2009 Devin Christensen. Licensed under the MIT License:
-#   http://www.opensource.org/licenses/mit-license.php
+# Copyright (c) 2009 Devin Christensen. See LICENSE for details.
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
