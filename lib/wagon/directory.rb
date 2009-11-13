@@ -4,27 +4,21 @@ require 'stringio'
 
 module Wagon
   class Directory < Page
+    def initialize(*args)
+      super
+      self.at('a.linknoline[href^="javascript:confirm_photo"]')['href'].match(/^javascript:confirm_photo\('(.*)'\);$/)
+      @url    = $1
+      @source = nil
+    end
+    
     def ward
       @parent
     end
     
-    def photo_directory_path
-      return @photo_directory_path unless @photo_directory_path.nil?
-      
-      self.at('a.linknoline[href^="javascript:confirm_photo"]')['href'].match(/^javascript:confirm_photo\('(.*)'\);$/)
-      @photo_directory_path = $1
-    end
-    
-    def photo_directory
-      @photo_directory ||= PhotoDirectory.new(connection, photo_directory_path)
-    end
-    
     def households
-      @households ||= photo_directory.households.sort
-    end
-    
-    def members
-      households.collect(&:members).flatten()
+      @households ||= self.search('body > table > tr > td.eventsource[@width="25%"]').collect do |household_td|
+        household = Household.create_from_td(connection, household_td)
+      end.sort
     end
     
     def to_pdf(options = {})

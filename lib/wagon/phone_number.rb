@@ -4,7 +4,7 @@ module Wagon
     
     def self.extract_from_string(string)
       string.strip =~ /([\)\(\+\s\-\d]+)(\((.*)\))?$/
-      self.new($3 || 'Home', $1.strip)
+      self.new($3 || 'Home', $1.to_s.strip)
     end
     
     def initialize(type, value)

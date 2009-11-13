@@ -2,7 +2,7 @@ module Wagon
   class Address
     CITY_STATE_ZIP = %r/^(\D+), (\D+)?\s*(\d+(-\d+)?)?$/
     
-    attr_reader :street, :city, :state, :zip, :country
+    attr_reader :city, :state, :zip, :country
     
     def self.extract_from_string(string)
       parts   = string.split("\n").collect(&:strip).delete_if(&:empty?)
@@ -18,6 +18,11 @@ module Wagon
     
     def initialize(street, city, state, zip, country)
       @street, @city, @state, @zip, @country = street, city, state, zip, country
+    end
+    
+    def street
+      #601 N. Monterey Drive Apartment K
+      @street.to_s.gsub(/apartment/i, 'Apt.').gsub(/drive/i, 'Dr.')
     end
     
     def to_s

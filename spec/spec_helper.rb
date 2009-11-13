@@ -13,6 +13,7 @@ require 'highline/import'
 $user = nil
 
 def establish_connection
+  puts "Create a connection for testing: "
   username = ask("What is your lds.org username? ")
   password = ask("What is your lds.org password? ") { |prompt| prompt.echo = "*" }
   
@@ -26,6 +27,11 @@ end
 
 if File.exists?(USER_FILE)
   restore_connection()
+  
+  if $user.expired?
+    puts "Connection timed out."
+    establish_connection()
+  end
 else
   establish_connection()
 end
