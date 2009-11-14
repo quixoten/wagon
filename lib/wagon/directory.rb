@@ -1,3 +1,4 @@
+require 'wagon/household'
 require 'prawn'
 require 'stringio'
 
