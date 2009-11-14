@@ -4,13 +4,6 @@ require 'stringio'
 
 module Wagon
   class Directory < Page
-    def initialize(*args)
-      super
-      self.at('a.linknoline[href^="javascript:confirm_photo"]')['href'].match(/^javascript:confirm_photo\('(.*)'\);$/)
-      @url    = $1
-      @source = nil
-    end
-    
     def ward
       @parent
     end
@@ -56,8 +49,9 @@ module Wagon
             y = pdf.bounds.top - row*grid_height - header_height
             (0...columns).each do |column|
               break if (index = page*rows*columns+row*columns+column) >= households.size
-              household = households[index]
               x         = pdf.bounds.left + column*grid_width
+              household = households[index]
+              
               pdf.bounding_box([x, y], :width => grid_width, :height => grid_height) do
                 pdf.bounding_box([pdf.bounds.left + padding, pdf.bounds.top - padding], :width => box_width, :height => box_height) do
                   info = []

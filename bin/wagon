@@ -128,7 +128,7 @@ class WagonApp
     
     directory = user.ward.to_pdf( @options.marshal_dump )
     directory.render_file(@options.output_file)
-    
+        
     puts "\nFinished. Enjoy.\n"
     
   rescue Wagon::AuthenticationFailure

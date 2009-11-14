@@ -7,7 +7,7 @@ module Wagon
     end
     
     def directory_path
-      @directory_path ||= self.at('a.directory[href^="/units/a/directory"]')['href']
+      @directory_path ||= '/units/a/directory/photoprint/1,10357,605-1-7-197742,00.html'
     end
     
     def directory

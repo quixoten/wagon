@@ -6,11 +6,16 @@ require 'base64'
 
 module Wagon
   class Household
-    attr_reader :connection, :name, :address, :phone_number, :image_path, :members
+    attr_reader :connection, :address, :phone_number, :image_path, :members
     
-    def initialize(connection)
-      @members = []
-      @connection = connection
+    def initialize(connection, name, address, phone_number, image_path, members)
+      @connection, @name, @address, @phone_number, @image_path, @members = connection, name, address, phone_number, image_path, members
+      
+      if has_image?
+        @connection.get_async(image_path) do |response|
+          @image_data = response.body
+        end
+      end
     end
     
     def name
@@ -30,7 +35,11 @@ module Wagon
     end
     
     def image_data
-      @image_data ||= has_image? ? connection.get(image_path) : ""
+      return nil unless has_image?
+      
+      sleep(0.5) while @image_data.nil?
+      
+      @image_data
     end
     
     def <=>(other)
@@ -41,21 +50,26 @@ module Wagon
       end
     end
     
-    def self.create_from_td(connection, td)
-      Household.new(connection).instance_eval do
-        name_element, phone_element, *member_elements = *td.search('table > tr > td.eventsource[width="45%"] > table > tr > td.eventsource')
-        @address      = Address.extract_from_string(td.search('table > tr > td.eventsource[width="25%"]').inner_text)
-        @image_path   = td.at('table > tr > td.eventsource[width="30%"] > img')['src'] rescue nil
-        @name         = name_element.inner_text
-        @phone_number = PhoneNumber.extract_from_string(phone_element.inner_text)
-        
-        member_elements.each_slice(2) do |name_and_email|
-          name, email = *name_and_email.collect { |element| element.inner_text.gsub(/\302\240/, '').strip() }
-          @members << Member.new(self, name, email)
-        end
-        
-        self
+    private
+    def spawn_download_thread
+      @thread ||= Thread.new(image_path) do |path|
+        @image_data = connection.get_async(path)
       end
+    end
+    
+    def self.create_from_td(connection, td)
+      name_element, phone_element, *member_elements = *td.search('table > tr > td.eventsource[width="45%"] > table > tr > td.eventsource')
+      address       = Address.extract_from_string(td.search('table > tr > td.eventsource[width="25%"]').inner_text)
+      image_path    = td.at('table > tr > td.eventsource[width="30%"] > img')['src'] rescue nil
+      phone_number  = PhoneNumber.extract_from_string(phone_element.inner_text)
+      members       = []
+      
+      member_elements.each_slice(2) do |name_and_email|
+        name, email = *name_and_email.collect { |element| element.inner_text.gsub(/\302\240/, '').strip() }
+        members << Member.new(self, name, email)
+      end
+      
+      self.new(connection, name_element.inner_text, address, phone_number, image_path, members)
     end
   end
 end

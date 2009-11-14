@@ -29,7 +29,7 @@ if File.exists?(USER_FILE)
   restore_connection()
   
   if $user.expired?
-    puts "Connection timed out."
+    puts "Previous connection timed out."
     establish_connection()
   end
 else
