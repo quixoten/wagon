@@ -1,6 +1,5 @@
 require 'net/http'
 require 'net/https'
-require 'curb'
 require 'uri'
 require 'digest/sha1'
 require 'wagon/ward'
@@ -90,12 +89,6 @@ module Wagon
       @http.use_ssl      = true
       @http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
       @http
-    end
-    
-    def _curl
-      @curl ||= Curl::Easy.new do |curl|
-        curl.headers = {'Cookie' => @cookies || ''}
-      end
     end
     
     def _get(path)
