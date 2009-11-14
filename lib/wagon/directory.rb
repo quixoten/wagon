@@ -1,4 +1,3 @@
-require 'wagon/photo_directory'
 require 'prawn'
 require 'stringio'
 
