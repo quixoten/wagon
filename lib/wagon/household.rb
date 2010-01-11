@@ -50,13 +50,6 @@ module Wagon
       end
     end
     
-    private
-    def spawn_download_thread
-      @thread ||= Thread.new(image_path) do |path|
-        @image_data = connection.get_async(path)
-      end
-    end
-    
     def self.create_from_td(connection, td)
       name_element, phone_element, *member_elements = *td.search('table > tr > td.eventsource[width="45%"] > table > tr > td.eventsource')
       address       = Address.extract_from_string(td.search('table > tr > td.eventsource[width="25%"]').inner_text)
