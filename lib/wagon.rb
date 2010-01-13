@@ -1,3 +1,5 @@
+require 'queue_to_the_future'
+
 module Wagon
   BASE_PATH = File.join(File.dirname(__FILE__), '..')
   VERSION = open(File.join(BASE_PATH, 'VERSION')).read()

@@ -2,14 +2,13 @@ require 'nokogiri'
 
 module Wagon
   class Page
-    attr_reader :connection
+    attr_reader :connection, :source
     
     def initialize(connection, url, parent = nil)
       @connection, @url, @parent = connection, url, parent
-    end
-    
-    def source
-      @source ||= Nokogiri::HTML(get(@url))
+      @source = Future(@url) do |url|
+        Nokogiri::HTML(get(url))
+      end
     end
     
     def get(*args)

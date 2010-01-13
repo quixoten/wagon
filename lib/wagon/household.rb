@@ -6,14 +6,14 @@ require 'base64'
 
 module Wagon
   class Household
-    attr_reader :connection, :address, :phone_number, :image_path, :members
+    attr_reader :connection, :address, :phone_number, :image_path, :image_data, :members
     
     def initialize(connection, name, address, phone_number, image_path, members)
       @connection, @name, @address, @phone_number, @image_path, @members = connection, name, address, phone_number, image_path, members
       
       if has_image?
-        @connection.get_async(image_path) do |response|
-          @image_data = response.body
+        @image_data = Future(image_path) do |image_path|
+          @connection.get(image_path)
         end
       end
     end
@@ -32,14 +32,6 @@ module Wagon
     
     def has_image?
       !image_path.to_s.empty?
-    end
-    
-    def image_data
-      return nil unless has_image?
-      
-      sleep(0.5) while @image_data.nil?
-      
-      @image_data
     end
     
     def <=>(other)

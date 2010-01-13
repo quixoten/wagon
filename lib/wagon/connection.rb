@@ -11,33 +11,6 @@ module Wagon
     HOST        = 'secure.lds.org'
     LOGIN_PATH  = '/units/a/login/1,21568,779-1,00.html?URL='
     
-    # For asynchronous procedures
-    @@trigger = ConditionVariable.new
-    @@lock    = Mutex.new
-    @@queue   = []
-    
-    (1..30).collect do
-      Thread.new do
-        http              = Net::HTTP.new(HOST, 443)
-        http.use_ssl      = true
-        http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
-        http
-        
-        while true
-          connection, path, callback = nil, nil, nil
-          @@lock.synchronize do
-            connection, path, callback = *@@queue.shift
-          end
-          
-          if connection
-            callback.call(http.request(Net::HTTP::Get.new(path, {'Cookie' => connection.cookies || ''})))
-          else
-            sleep(0.5)
-          end
-        end
-      end
-    end
-    
     attr_reader :cookies
     
     def initialize(username, password)
@@ -60,12 +33,6 @@ module Wagon
       _get(path).body
     end
     
-    def get_async(path, &block)
-      @@lock.synchronize do
-        @@queue.push([self, path, block])
-      end
-    end
-    
     def expired?
       _head(ward.directory_path).class != Net::HTTPOK
     end
@@ -84,11 +51,10 @@ module Wagon
     
     private
     def _http
-      return @http unless @http.nil?
-      @http              = Net::HTTP.new(HOST, 443)
-      @http.use_ssl      = true
-      @http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
-      @http
+      http              = Net::HTTP.new(HOST, 443)
+      http.use_ssl      = true
+      http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
+      http
     end
     
     def _get(path)
