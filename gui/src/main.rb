@@ -46,7 +46,8 @@ end
 GlobalErrorHandler.on_error {|exception, thread| show_error_dialog_and_exit(exception, thread) }
 
 begin
-  # Your application code goes here
+  require 'session_controller'
+  SessionController.instance.open
 rescue => e
   show_error_dialog_and_exit(e)
 end

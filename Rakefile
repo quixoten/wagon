@@ -48,3 +48,30 @@ rescue LoadError
     abort "YARD is not available. In order to run yardoc, you must: sudo gem install yard"
   end
 end
+
+project_path  = File.dirname(__FILE__)
+version       = open("#{project_path}/VERSION").read().strip()
+
+namespace :gui do
+  def run(command)
+    puts "#{command}"
+    `#{command}`
+  end
+  
+  desc "Build and unpack gem and dependencies for the gui"
+  task :unpack_gem => ["check_dependencies:runtime", :build] do
+    
+    run("find '#{project_path}/gui/lib/ruby/' -maxdepth 1 -mindepth 1 -type d -execdir rm -r '{}' \\;")
+    run("gem unpack '#{project_path}/pkg/wagon-#{version}.gem' --target='#{project_path}/gui/lib/ruby'")
+    run("gem unpack queue_to_the_future --target='#{project_path}/gui/lib/ruby'")
+    run("gem unpack nokogiri --target='#{project_path}/gui/lib/ruby'")
+    run("gem unpack prawn --target='#{project_path}/gui/lib/ruby'")
+    run("gem unpack prawn-core --target='#{project_path}/gui/lib/ruby'")
+    
+    Dir.glob("#{project_path}/gui/lib/ruby/*") do |path|
+      next unless File.directory?(path)
+      new_path = path.sub(/-(\d\.)+\d$/, '')
+      run("mv '#{path}' '#{new_path}'")
+    end
+  end
+end
