@@ -40,11 +40,13 @@ module Wagon
         pdf.font_size = options[:font_size].to_i
         info_count    = 1 + [:address, :phone_number, :email].inject(0) { |sum, item| sum += options[item] ? 1 : 0 }
         info_height   = pdf.font.height*info_count
+        date          = options[:include_date] ? Time.new().strftime("%m/%d/%Y") : ""
         
         (0...pages).each do |page|
           pdf.start_new_page unless page == 0
           pdf.text(options[:title], :at => [pdf.bounds.right/2 - pdf.width_of(options[:title], :size => 12)/2, pdf.bounds.top - header_height + padding], :size => 12)
           pdf.text("For Church Use Only", :at => [pdf.bounds.right/2 - pdf.width_of("For Church Use Only")/2, pdf.bounds.bottom])
+          pdf.text(date, :at => [pdf.bounds.right - pdf.width_of(date), pdf.bounds.bottom])
           (0...rows).each do |row|
             y = pdf.bounds.top - row*grid_height - header_height
             (0...columns).each do |column|

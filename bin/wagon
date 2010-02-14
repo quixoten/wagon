@@ -13,7 +13,7 @@
 #   -p, --padding     Padding between households (default is 2)
 #   -f, --font-size   Primary font size (default is 8)
 #   --page-numbers    Include page numbers in the footer, e.g. (1 of 3)
-#   --date            Include the current date in the footer
+#   --no-date         Do not include the current date in the footer
 #   --no-picture      Do not include pictures
 #   --no-address      Do not include street addresses
 #   --no-phone        Do not include phone numbers
@@ -44,7 +44,7 @@ class WagonApp
     @options.padding      = 2
     @options.font_size    = 8
     @options.page_numbers = false
-    @options.include_date = false
+    @options.include_date = true
     @options.picture      = true
     @options.address      = true
     @options.phone_number = true
@@ -81,7 +81,7 @@ class WagonApp
     opts.on('-p', '--padding=PADDING')  { |padding| @options.padding = padding }
     opts.on('-f', '--font-size=SIZE')   { |size| @options.font_size = size }
     opts.on('--page-numbers')   { @options.page_numbering = true }
-    opts.on('--date')           { @options.include_date = true }
+    opts.on('--no--date')       { @options.include_date = false }
     opts.on('--no-picture')     { @options.picture = false }
     opts.on('--no-address')     { @options.address = false }
     opts.on('--no-phone')       { @options.phone_number = false }
