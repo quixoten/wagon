@@ -21,6 +21,4 @@ pkg
 
 ## PROJECT::SPECIFIC
 spec/user.dat
-gui/lib/ruby/*/
-wagon.gemspec
 *.pdf
