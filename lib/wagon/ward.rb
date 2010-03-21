@@ -6,8 +6,12 @@ module Wagon
       @name ||= self.at('a.channeltitle[href^="/units/home"]').inner_text.strip
     end
     
+    def ward_id
+      @ward_id ||= @url.sub(%r{^.+\-(\d+),\d+\.html$}, '\1')
+    end
+    
     def directory_path
-      @directory_path ||= '/units/a/directory/photoprint/1,10357,605-1-7-197742,00.html'
+      @directory_path ||= "/units/a/directory/photoprint/1,10357,605-1-7-#{ward_id},00.html"
     end
     
     def directory
