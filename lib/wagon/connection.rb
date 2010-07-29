@@ -58,7 +58,11 @@ module Wagon
     end
     
     def _get(path)
+      attempts = 0
       _http.request(Net::HTTP::Get.new(path, {'Cookie' => @cookies || ''}))
+    rescue Exception => e
+      retry unless (attempts += 1) == 3
+      raise e
     end
     
     def _head(path)
