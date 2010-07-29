@@ -56,11 +56,11 @@ class WagonApp
     if arguments_valid? 
       puts "Start at #{DateTime.now}\n\n" if @options.verbose
       
-      output_options if @options.verbose # [Optional]
+      output_options if @options.verbose
             
       process
       
-      puts "\nFinished in #{DateTime.now}" if @options.verbose
+      puts "\nFinished at #{DateTime.now}" if @options.verbose
       
     else
       output_usage
