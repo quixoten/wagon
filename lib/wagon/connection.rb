@@ -18,7 +18,7 @@ module Wagon
       @cookies    = response['set-cookie']
       @home_path  = URI.parse(response['location']).path
 
-      raise AuthenticationFailure.new("Invalid username and/or password") unless @cookies
+      raise AuthenticationFailure.new("Invalid username and/or password") unless @cookies =~ /lds_scs_authentication=/
     end
     
     def home_path
