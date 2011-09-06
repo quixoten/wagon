@@ -21,5 +21,7 @@ pkg
 Gemfile.lock
 
 ## PROJECT::SPECIFIC
+.cookies
+test/.user
 spec/user.dat
 *.pdf

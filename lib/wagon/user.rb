@@ -23,14 +23,12 @@ module Wagon
     end
     
     def ward_and_stake
-      @ward_and_stake = JSON(get("/directory/services/ludrs/unit/current-user-ward-stake/"))
-      def ward_and_stake
-        return @ward_and_stake
-      end
+      path = "/directory/services/ludrs/unit/current-user-ward-stake/"
+      @ward_and_stake ||= JSON(get(path))
     end
     
     def ward
-      @ward ||= Ward.new(self, home_path)
+      @ward ||= Ward.new(self)
     end
     
     def get(path)
@@ -38,7 +36,7 @@ module Wagon
     end
     
     def expired?
-      _head(ward.directory_path).class != Net::HTTPOK
+      _head("/directory/").class != Net::HTTPOK
     end
     
     def _dump(depth)
@@ -46,9 +44,8 @@ module Wagon
     end
     
     def self._load(string)
-      cookies = Marshal.restore(string)
       user = User.allocate()
-      user.instance_variable_set(:@cookies, cookies)
+      user.instance_variable_set(:@cookies, Marshal.load(string))
       user
     end
     
