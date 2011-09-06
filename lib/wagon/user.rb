@@ -1,28 +1,32 @@
 require 'net/http'
 require 'net/https'
 require 'uri'
-require 'digest/sha1'
+require 'json'
 require 'wagon/ward'
 
 module Wagon
   class AuthenticationFailure < StandardError; end
   
-  class Connection
-    HOST        = 'secure.lds.org'
-    LOGIN_PATH  = '/units/a/login/1,21568,779-1,00.html?URL='
+  class User
+    HOST        = 'lds.org'
+    LOGIN_PATH  = '/login.html'
     
     attr_reader :cookies
     
     def initialize(username, password)
       response    = _post(LOGIN_PATH, 'username' => username, 'password' => password)
       @cookies    = response['set-cookie']
-      @home_path  = URI.parse(response['location']).path
 
-      raise AuthenticationFailure.new("Invalid username and/or password") unless @cookies =~ /lds_scs_authentication=/
+      unless response.code == "200"
+        raise AuthenticationFailure.new("Invalid username and/or password")
+      end
     end
     
-    def home_path
-      @home_path
+    def ward_and_stake
+      @ward_and_stake = JSON(get("/directory/services/ludrs/unit/current-user-ward-stake/"))
+      def ward_and_stake
+        return @ward_and_stake
+      end
     end
     
     def ward
@@ -38,15 +42,14 @@ module Wagon
     end
     
     def _dump(depth)
-      Marshal.dump([@cookies, @home_path])
+      Marshal.dump(@cookies)
     end
     
     def self._load(string)
-      attributes = Marshal.restore(string)
-      connection = Connection.allocate()
-      connection.instance_variable_set(:@cookies, attributes.shift)
-      connection.instance_variable_set(:@home_path, attributes.shift)
-      connection
+      cookies = Marshal.restore(string)
+      user = User.allocate()
+      user.instance_variable_set(:@cookies, cookies)
+      user
     end
     
     private
