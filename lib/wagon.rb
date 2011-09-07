@@ -9,5 +9,5 @@ module Wagon
   end
 end
 
-require 'wagon/page'
 require 'wagon/user'
+

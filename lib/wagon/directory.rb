@@ -3,7 +3,7 @@ require 'prawn'
 require 'stringio'
 
 module Wagon
-  class Directory < Page
+  class Directory
     def ward
       @parent
     end

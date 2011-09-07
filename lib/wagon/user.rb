@@ -8,23 +8,25 @@ module Wagon
   class AuthenticationFailure < StandardError; end
   
   class User
-    HOST        = 'lds.org'
-    LOGIN_PATH  = '/login.html'
+    HOST = 'lds.org'
+    PORT = 443
+    PATHS = {
+      :login => '/login.html',
+      :root => '/directory/',
+      :my_ward_and_stake => '/directory/services/ludrs/unit/current-user-ward-stake/'
+    }
     
-    attr_reader :cookies
+    attr_reader :headers
     
     def initialize(username, password)
-      response    = _post(LOGIN_PATH, 'username' => username, 'password' => password)
-      @cookies    = response['set-cookie']
-
-      unless response.code == "200"
-        raise AuthenticationFailure.new("Invalid username and/or password")
-      end
+      # @httpool = Net::HTTP::Pool.new(HOST, PORT, {:size => 20})
+      response = post(:login, :username => username, :password => password)
+      raise AuthenticationFailure unless response.class == HTTPOK 
+      @headers = { 'Cookie' => response['Set-Cookie'] }
     end
     
     def ward_and_stake
-      path = "/directory/services/ludrs/unit/current-user-ward-stake/"
-      @ward_and_stake ||= JSON(get(path))
+      @ward_and_stake ||= JSON(get(:my_ward_and_stake))
     end
     
     def ward
@@ -32,47 +34,40 @@ module Wagon
     end
     
     def get(path)
-      _get(path).body
+      resp = _http.get(PATHS[path], headers)
+      puts resp.content_type
+    end
+
+    def post(path, data)
+      request = Net::HTTP::Post.new(PATHS[path], headers)
+      request.set_form_data(data)
+      _http.request(request)
     end
     
     def expired?
-      _head("/directory/").class != Net::HTTPOK
+      _http.head(PATHS[:root]).class != Net::HTTPOK
     end
     
     def _dump(depth)
-      Marshal.dump(@cookies)
+      Marshal.dump(@headers)
     end
     
     def self._load(string)
       user = User.allocate()
-      user.instance_variable_set(:@cookies, Marshal.load(string))
+      user.instance_variable_set(:@headers, Marshal.load(string))
       user
     end
     
     private
     def _http
-      http              = Net::HTTP.new(HOST, 443)
-      http.use_ssl      = true
-      http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
-      http
-    end
-    
-    def _get(path)
-      attempts = 0
-      _http.request(Net::HTTP::Get.new(path, {'Cookie' => @cookies || ''}))
-    rescue Exception => e
-      retry unless (attempts += 1) == 3
-      raise e
-    end
-    
-    def _head(path)
-      _http.request(Net::HTTP::Head.new(path, {'Cookie' => @cookies || ''}))
-    end
-    
-    def _post(path, data)
-      request = Net::HTTP::Post.new(path, {'Cookie' => @cookies || ''})
-      request.set_form_data(data)
-      _http.request(request)
+      unless @http
+        @http              = Net::HTTP.new(HOST, 443)
+        @http.use_ssl      = true
+        @http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
+        @http.start
+      end
+
+      @http
     end
   end
 end
