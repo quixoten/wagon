@@ -1,6 +1,8 @@
 #require 'queue_to_the_future'
 
 module Wagon
+  require 'wagon/user'
+
   BASE_PATH = File.join(File.dirname(__FILE__), '..')
   VERSION = open(File.join(BASE_PATH, 'VERSION')).read()
   
@@ -9,5 +11,4 @@ module Wagon
   end
 end
 
-require 'wagon/user'
 
