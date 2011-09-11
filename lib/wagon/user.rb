@@ -23,7 +23,8 @@ module Wagon
     end
     
     def expired?
-      conn.expired?
+      # conn.expired?
+      false
     end
     
     def _dump(depth)
@@ -31,9 +32,10 @@ module Wagon
     end
     
     def self._load(string)
-      user = User.allocate()
-      user.instance_variable_set(:@conn, Marshal.load(string))
-      user
+      User.allocate.instance_eval do
+        @conn = Marshal.load(string)
+        self
+      end
     end
   end
 end

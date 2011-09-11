@@ -6,6 +6,10 @@ module Wagon
   class AuthenticationFailure < StandardError; end
 
   class Connection < Net::HTTP
+    class << self
+      alias new newobj
+    end
+
     MAP = {
       :root => '/directory/',
       :login => '/login.html',
@@ -13,36 +17,58 @@ module Wagon
     }
 
     def initialize(username, password)
+      puts "cookies: #{@cookies}"
       super('lds.org', 443)
-      use_ssl = true
-      verify_mode = OpenSSL::SSL::VERIFY_NONE
-      connect(username, password)
+      @newimpl = true
+      self.use_ssl = true
+      self.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+      unless @cookies
+        _connect(username, password)
+      end
     end
 
-    # def request(request)
-    #   retried = false
-    #   request["Set-Cookie"] = @cookies
+    def expired?
+      # self.head(:root).is_a?(Net::HTTPOK)
+      false
+    end
 
-    #  http.start unless http.started?
+    def request(req)
+      retried = false
+      req["Set-Cookie"] = @cookies || ""
 
-    #  begin
-    #    http.request(request)
-    #  rescue Errno::ECONNRESET => exception
-    #    http.finish if http.started? 
-    #    http.start
+      self.start unless self.started?
 
-    #    if retried
-    #      raise
-    #    else
-    #      retried = true
-    #      retry
-    #    end
-    #  end
-    #end
+      begin
+        super(req)
+      rescue Errno::ECONNRESET => exception
+        self.finish if self.started? 
+        self.start
 
-    def post(path, *args, &block)
+        if retried
+          raise
+        else
+          retried = true
+          retry
+        end
+      end
+    end
+
+    def get(path, *args, &block)
       path = MAP[path] || path.to_s
       super(path, *args, &block)
+    end
+
+    def head(path, *args, &block)
+      path = MAP[path] || path.to_s
+      super(path, *args, &block)
+    end
+
+    def post(path, data)
+      path = MAP[path] || path.to_s
+      req = Net::HTTP::Post.new(path)
+      req.set_form_data(data)
+      self.request(req)
     end
 
     def _dump(depth)
@@ -50,22 +76,19 @@ module Wagon
     end
     
     def self._load(string)
-      User.allocate.instance_eval do
-        @address = 'lds.org'
-        @port = 443
+      Connection.allocate.instance_eval do
         @cookies = Marshal.load(string)
-        use_ssl = true
-        verify_mode = OpenSSL::SSL::VERIFY_NONE
+        self.send(:initialize, nil, nil)
         self
       end
     end
 
     private
-    def connect(username, password)
+    def _connect(username, password)
       res = post(:login, :username => username, :password => password)
 
-      if res === Net::HTTPOK
-        @cookies = response['Set-Cookie']
+      if res.is_a?(Net::HTTPOK)
+        @cookies = res['Set-Cookie']
       else
         raise AuthenticationFailure
       end
