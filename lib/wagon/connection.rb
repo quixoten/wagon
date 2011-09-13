@@ -13,29 +13,30 @@ module Wagon
     MAP = {
       :root => '/directory/',
       :login => '/login.html',
-      :user_ward_and_stake => '/directory/services/ludrs/unit/current-user-ward-stake/'
+      :user_ward_and_stake => '/directory/services/ludrs/unit/current-user-ward-stake/',
+      :households => '/directory/services/ludrs/mem/member-list/',
+      :household => '/directory/services/ludrs/mem/ward-family/',
+      :photos => '/directory/services/ludrs/mem/wardDirectory/photos/'
     }
 
     def initialize(username, password)
-      puts "cookies: #{@cookies}"
       super('lds.org', 443)
+      @pool = []
       @newimpl = true
       self.use_ssl = true
       self.verify_mode = OpenSSL::SSL::VERIFY_NONE
-
-      unless @cookies
-        _connect(username, password)
-      end
+      self.set_debug_output $stderr
+      _connect(username, password) unless @key
+      self
     end
 
     def expired?
-      # self.head(:root).is_a?(Net::HTTPOK)
-      false
+      !self.head(:root).is_a?(Net::HTTPOK)
     end
 
     def request(req)
       retried = false
-      req["Set-Cookie"] = @cookies || ""
+      req["Cookie"] = @key || ""
 
       self.start unless self.started?
 
@@ -72,14 +73,13 @@ module Wagon
     end
 
     def _dump(depth)
-      Marshal.dump(@cookies)
+      Marshal.dump(@key)
     end
     
     def self._load(string)
       Connection.allocate.instance_eval do
-        @cookies = Marshal.load(string)
+        @key = Marshal.load(string)
         self.send(:initialize, nil, nil)
-        self
       end
     end
 
@@ -88,7 +88,7 @@ module Wagon
       res = post(:login, :username => username, :password => password)
 
       if res.is_a?(Net::HTTPOK)
-        @cookies = res['Set-Cookie']
+        @key = res['Set-Cookie']
       else
         raise AuthenticationFailure
       end

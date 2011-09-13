@@ -13,5 +13,9 @@ class TestWagonUser < Test::Unit::TestCase
     assert_not_nil(user.ward_and_stake)
     assert_not_nil(user.ward_and_stake["wardUnitNo"])
   end
+
+  def test_ward
+    assert(user.ward.is_a?(Wagon::Ward))
+  end
 end
 

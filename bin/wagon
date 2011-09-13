@@ -20,7 +20,7 @@
 #   --no-email        Do not include email addresses
 #
 # == Copyright
-# Copyright (c) 2009 Devin Christensen. See LICENSE for details.
+# Copyright (c) 2011 Devin Christensen. See LICENSE for details.
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 

@@ -1,37 +1,69 @@
-require 'wagon/address'
-require 'wagon/phone_number'
-require 'wagon/member'
 
-require 'base64'
+require 'wagon/member'
 
 module Wagon
   class Household
-    attr_reader :connection, :address, :phone_number, :image_path, :image_data, :members
+    attr_reader :ward, :conn, :id, :image_data
     
-    def initialize(connection, name, address, phone_number, image_path, members)
-      @connection, @name, @address, @phone_number, @image_path, @members = connection, name, address, phone_number, image_path, members
-      
+    def initialize(ward, id)
+      @id = id
+      @ward = ward
+      @conn = ward.conn
+      @photo_path = ward.photos[id]
+
+      path = "#{Connection::MAP[:household]}#{id}"
+      @household = JSON(conn.get(path).body)
+
       if has_image?
-        @image_data = Future(image_path) do |image_path|
-          @connection.get(image_path)
-        end
+        #@image_data = Future(image_path) do |image_path|
+        #  @connection.get(image_path)
+        #end
       end
     end
-    
+
     def name
-      self.individual? ? "#{members.first.name} #{@name}" : "#{@name} Household"
+      unless @name
+        if self.individual?
+          @name = @household["head"]["directoryName"]
+        else
+          @name = "#{@household["familyName"]} Household"
+        end
+      end
+      @name
     end
-    
-    def reversed_name
-      self.individual? ? "#{@name}, #{members.first.name}" : name
+
+    def address
+      unless @address
+        @address = [
+          @household["address"]["addr1"],
+          @household["address"]["addr2"],
+          @household["address"]["addr3"],
+          @household["address"]["addr4"],
+          @household["address"]["addr5"]
+        ].flatten.join("\n")
+      end
+      @address
     end
-    
+
+    def phone_number
+      @household["phone"]
+    end
+
     def individual?
       members.count == 1
     end
+
+    def members
+      unless @members
+        @members = [@household["head"]]
+        @members.concat(@household["spouse"] || [])
+        @members.concat(@household["children"])
+      end
+      @members
+    end
     
     def has_image?
-      !image_path.to_s.empty?
+      !@image_path.to_s.empty?
     end
     
     def <=>(other)
@@ -41,20 +73,6 @@ module Wagon
         has_image? ? -1 : 1
       end
     end
-    
-    def self.create_from_td(connection, td)
-      name_element, phone_element, *member_elements = *td.search('table > tr > td.eventsource[width="45%"] > table > tr > td.eventsource')
-      address       = Address.extract_from_string(td.search('table > tr > td.eventsource[width="25%"]').inner_text)
-      image_path    = td.at('table > tr > td.eventsource[width="30%"] > img')['src'] rescue nil
-      phone_number  = PhoneNumber.extract_from_string(phone_element.inner_text)
-      members       = []
-      
-      member_elements.each_slice(2) do |name_and_email|
-        name, email = *name_and_email.collect { |element| element.inner_text.gsub(/\302\240/, '').strip() }
-        members << Member.new(self, name, email)
-      end
-      
-      self.new(connection, name_element.inner_text, address, phone_number, image_path, members)
-    end
   end
 end
+

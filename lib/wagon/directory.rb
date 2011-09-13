@@ -4,14 +4,14 @@ require 'stringio'
 
 module Wagon
   class Directory
-    def ward
-      @parent
+    attr_reader :ward
+
+    def initialize(ward)
+      @ward = ward
     end
-    
+
     def households
-      @households ||= self.search('body > table > tr > td.eventsource[@width="25%"]').collect do |household_td|
-        household = Household.create_from_td(connection, household_td)
-      end.sort
+      ward.households
     end
     
     def to_pdf(options = {})
@@ -57,7 +57,7 @@ module Wagon
               pdf.bounding_box([x, y], :width => grid_width, :height => grid_height) do
                 pdf.bounding_box([pdf.bounds.left + padding, pdf.bounds.top - padding], :width => box_width, :height => box_height) do
                   info = []
-                  info.push(household.name)
+                  info.push(household["coupleNameme"])
                   info.push(*household.address.street) if options[:address]
                   info.push(household.phone_number.value) if options[:phone_number]
                   info.push(household.members.first.email) if options[:email]

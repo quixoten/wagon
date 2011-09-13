@@ -23,8 +23,7 @@ module Wagon
     end
     
     def expired?
-      # conn.expired?
-      false
+      conn.expired?
     end
     
     def _dump(depth)
