@@ -27,6 +27,7 @@ else
   exit(1)
 end
 
+start = Time.now
 conn.url = "https://lds.org/directory/services/ludrs/unit/current-user-ward-stake/"
 conn.http_get
 ward_and_stake = JSON(conn.body_str)
@@ -156,3 +157,5 @@ end
 
 doc.render_file("#{ward_and_stake["wardName"]}.pdf")
 puts "done."
+puts "Finished in #{Time.now - start} seconds."
+
