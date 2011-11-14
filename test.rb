@@ -2,6 +2,9 @@ $stdout.write("Loading... ")
 $stdout.flush()
 
 require 'rubygems'
+
+gem 'curb', '0.7.15'
+
 require 'curb'
 require 'highline'
 require 'json'
@@ -39,7 +42,7 @@ $stdout.flush
 conn.url = "https://lds.org/directory/services/ludrs/mem/member-list/#{ward_unit_no}"
 conn.http_get
 households = JSON(conn.body_str).inject({}) do |all, current|
-  key = current["headOfHouseIndividualId"]
+  key = current["headOfHouseIndividualId"].to_s
   all[key] = {:key => key}
   all
 end
@@ -51,7 +54,7 @@ end
 conn.url = "https://lds.org/directory/services/ludrs/mem/wardDirectory/photos/#{ward_unit_no}"
 conn.http_get
 JSON(conn.body_str).each do |data|
-  key = data["householdId"]
+  key = data["householdId"].to_s
   photo_path = data["photoUrl"]
   household = households[key]
   household[:photo_path] = photo_path
@@ -71,19 +74,25 @@ all_urls = household_urls.concat(photo_urls)
 Curl::Multi.get(all_urls, {:cookies => conn.cookies}, {:max_connects => 60}) do |easy|
   if easy.last_effective_url.match(/ward-family/)
     data = JSON(easy.body_str)
-    key = data["head"]["individualId"]
-    household = households[key]
-    members = [data["head"]].concat(data["spouse"] || []).concat(data["children"])
+    key = data["head"]["individualId"].to_s
+    household = households[key] || (households[key] = {:key => key})
+    members = [data["head"]]
+    members << data["spouse"] if data["spouse"]
+    members.concat(data["children"])
+
     household.merge!({
       :address => "#{data["address"]["addr1"]}",
       :email => data["email"],
       :phone_number => data["phone"]
     })
-    household[:name] = members.size == 1 \
-                        ? data["head"]["directoryName"] \
-                        : "#{data["familyName"]} Familiy"
+
+    if members.size == 1
+      household[:name] = data["head"]["directoryName"]
+    else
+      household[:name] = "#{data["familyName"]} Familiy" 
+    end
   else
-    key = easy.last_effective_url.match(/__key__=(.*)/)[1].to_i
+    key = easy.last_effective_url.match(/__key__=(.*)/)[1].to_s
     household = households[key]
     household[:photo] = StringIO.new(easy.body_str)
   end
@@ -107,8 +116,8 @@ $stdout.flush
 doc = Prawn::Document.new(:left_margin => 10, :right_margin => 10, :top_margin => 10, :bottom_margin => 10) do |pdf|
   header_height = 10
   footer_height = 10
-  columns       = 7.0
-  rows          = 6.0
+  columns       = 6.0
+  rows          = 5.0
   padding       = 2.0
   grid_width    = pdf.bounds.width / columns
   grid_height   = (pdf.bounds.height - header_height - footer_height) / rows
