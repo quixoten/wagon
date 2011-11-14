@@ -88,8 +88,10 @@ Curl::Multi.get(all_urls, {:cookies => conn.cookies}, {:max_connects => 60}) do 
 
     if members.size == 1
       household[:name] = data["head"]["directoryName"]
+      household[:sortName] = data["head"]["preferredName"]
     else
-      household[:name] = "#{data["familyName"]} Familiy" 
+      household[:name] = \
+      household[:sortName] = "#{data["familyName"]} Familiy" 
     end
   else
     key = easy.last_effective_url.match(/__key__=(.*)/)[1].to_s
@@ -104,7 +106,7 @@ households = households.keys.map do |key|
   households[key]
 end.sort do |a, b|
   if a[:photo] && b[:photo]
-    a[:name] <=> b[:name]
+    a[:sortName] <=> b[:sortName]
   else
     a[:photo] ? -1 : 1
   end
