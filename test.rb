@@ -87,7 +87,7 @@ Curl::Multi.get(all_urls, {:cookies => conn.cookies}, {:max_connects => 60}) do 
     })
 
     if members.size == 1
-      household[:name] = data["head"]["directoryName"]
+      household[:name] = "#{data["head"]["directoryName"]} #{data["head"]["surname"]}"
       household[:sortName] = data["head"]["preferredName"]
     else
       household[:name] = \
