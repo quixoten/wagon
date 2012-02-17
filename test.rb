@@ -3,7 +3,7 @@ $stdout.flush()
 
 require 'rubygems'
 
-gem 'curb', '0.7.15'
+gem 'curb', '0.8.0'
 
 require 'curb'
 require 'highline'
@@ -17,7 +17,7 @@ highline = HighLine.new
 username = highline.ask("What is your lds.org username? ")
 password = highline.ask("What is your lds.org password? ") { |q| q.echo = "*" }
 
-conn = Curl::Easy.new("https://lds.org/login.html")
+conn = Curl::Easy.new("https://www.lds.org/login.html")
 conn.http_post(Curl::PostField.content("username", username),
                Curl::PostField.content("password", password))
 
@@ -31,7 +31,7 @@ else
 end
 
 start = Time.now
-conn.url = "https://lds.org/directory/services/ludrs/unit/current-user-ward-stake/"
+conn.url = "https://www.lds.org/directory/services/ludrs/unit/current-user-ward-stake/"
 conn.http_get
 ward_and_stake = JSON(conn.body_str)
 ward_unit_no = ward_and_stake["wardUnitNo"]
@@ -39,7 +39,7 @@ ward_unit_no = ward_and_stake["wardUnitNo"]
 $stdout.write %Q<Gathering information for "#{ward_and_stake["wardName"]}"... >
 $stdout.flush
 
-conn.url = "https://lds.org/directory/services/ludrs/mem/member-list/#{ward_unit_no}"
+conn.url = "https://www.lds.org/directory/services/ludrs/mem/member-list/#{ward_unit_no}"
 conn.http_get
 households = JSON(conn.body_str).inject({}) do |all, current|
   key = current["headOfHouseIndividualId"].to_s
@@ -48,10 +48,10 @@ households = JSON(conn.body_str).inject({}) do |all, current|
 end
 
 household_urls = households.keys.map do |key|
-  "https://lds.org/directory/services/ludrs/mem/ward-family/#{key}"
+  "https://www.lds.org/directory/services/ludrs/mem/ward-family/#{key}"
 end
 
-conn.url = "https://lds.org/directory/services/ludrs/mem/wardDirectory/photos/#{ward_unit_no}"
+conn.url = "https://www.lds.org/directory/services/ludrs/mem/wardDirectory/photos/#{ward_unit_no}"
 conn.http_get
 JSON(conn.body_str).each do |data|
   key = data["householdId"].to_s
@@ -63,7 +63,7 @@ end
 photo_urls = households.keys.map do |key|
   photo_path = households[key][:photo_path]
   if photo_path.length > 0
-    "https://lds.org#{photo_path}&__key__=#{key}"
+    "https://www.lds.org#{photo_path}&__key__=#{key}"
   else
     nil
   end
