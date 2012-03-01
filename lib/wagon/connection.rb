@@ -2,7 +2,6 @@ require 'net/http'
 require 'net/https'
 
 module Wagon
-
   class AuthenticationFailure < StandardError; end
 
   class Connection < Net::HTTP
@@ -13,19 +12,18 @@ module Wagon
     MAP = {
       :root => '/directory/',
       :login => '/login.html',
-      :user_ward_and_stake => '/directory/services/ludrs/unit/current-user-ward-stake/',
+      :units => '/directory/services/ludrs/unit/current-user-units/',
       :households => '/directory/services/ludrs/mem/member-list/',
       :household => '/directory/services/ludrs/mem/ward-family/',
       :photos => '/directory/services/ludrs/mem/wardDirectory/photos/'
     }
 
     def initialize(username, password)
-      super('lds.org', 443)
-      @pool = []
+      super('www.lds.org', 443)
       @newimpl = true
       self.use_ssl = true
       self.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      self.set_debug_output $stderr
+      # self.set_debug_output $stderr
       _connect(username, password) unless @key
       self
     end

@@ -9,6 +9,22 @@ module Wagon
     def initialize(username, password)
       @conn = Wagon::Connection.new(username, password)
     end
+
+    def units
+      unless @units
+        resp = conn.get(:units)
+        @units = JSON(resp.body)
+      end
+      @units
+    end
+
+    def stake
+      units.first
+    end
+
+    def wards
+      units.first['wards']
+    end
     
     def ward_and_stake
       unless @ward_and_stake
@@ -17,11 +33,14 @@ module Wagon
       end
       @ward_and_stake
     end
-    
-    def ward
+
+    def wards
+    end
+
+    def home_ward
       @ward ||= Ward.new(self)
     end
-    
+
     def expired?
       conn.expired?
     end

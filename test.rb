@@ -2,14 +2,12 @@ $stdout.write("Loading... ")
 $stdout.flush()
 
 require 'rubygems'
-
-gem 'curb', '0.8.0'
-
 require 'curb'
 require 'highline'
 require 'json'
 require 'stringio'
 require 'prawn'
+require 'pp'
 
 puts "done."
 
@@ -26,8 +24,7 @@ if conn.response_code == 200
     "#{cookie[0]}=#{cookie[1]}"
   end.join(";")
 else
-  puts "Failed to connect."
-  exit(1)
+  abort "Failed to connect."
 end
 
 start = Time.now
@@ -89,6 +86,9 @@ Curl::Multi.get(all_urls, {:cookies => conn.cookies}, {:max_connects => 60}) do 
     if members.size == 1
       household[:name] = "#{data["head"]["directoryName"]} #{data["head"]["surname"]}"
       household[:sortName] = data["head"]["preferredName"]
+      if household[:sortName] == nil
+        pp data
+      end
     else
       household[:name] = \
       household[:sortName] = "#{data["familyName"]} Familiy" 
@@ -105,7 +105,7 @@ puts "done."
 households = households.keys.map do |key|
   households[key]
 end.sort do |a, b|
-  if a[:photo] && b[:photo]
+  if !a[:photo] === !b[:photo]
     a[:sortName] <=> b[:sortName]
   else
     a[:photo] ? -1 : 1
