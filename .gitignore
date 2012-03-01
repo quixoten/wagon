@@ -18,6 +18,7 @@ coverage
 doc
 .yardoc
 pkg
+.project
 
 ## PROJECT::SPECIFIC
 spec/user.dat
