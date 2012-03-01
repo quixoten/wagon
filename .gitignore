@@ -19,6 +19,7 @@ doc
 .yardoc
 pkg
 Gemfile.lock
+.project
 
 ## PROJECT::SPECIFIC
 .cookies
