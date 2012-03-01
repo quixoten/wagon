@@ -9,7 +9,8 @@ require 'stringio'
 require 'prawn'
 require 'pp'
 
-puts "done."
+$stdout.write("done.\n")
+$stdout.flush()
 
 module Curl
   class Easy
@@ -105,26 +106,30 @@ households = JSON(conn.body_str).inject({}) do |all, current|
   end
   
   multi.add(c)
-  
-  all
-end
 
-conn.url = "https://www.lds.org/directory/services/ludrs/mem/wardDirectory/photos/#{ward_unit_no}"
-conn.http_get
-JSON(conn.body_str).each do |data|
-  key = data["householdId"].to_s
-  photo_path = data["photoUrl"]
-  household = households[key]
-  
-  if photo_path.length > 0
-    c = Curl::Easy.new("https://www.lds.org#{photo_path}") do |curl|
-      curl.on_complete do |curl|
-        household[:photo] = StringIO.new(curl.body_str)
+  c = Curl::Easy.new("https://www.lds.org/directory/services/ludrs/photo/url/#{key}/household") do |curl|
+    curl.on_complete do |curl|
+      if curl.response_code == 200
+        data = JSON(curl.body_str)
+        photo_path = data["largeUri"]
+        if photo_path.length > 0
+          c = Curl::Easy.new("https://www.lds.org#{photo_path}") do |curl|
+            curl.on_complete do |curl|
+              if curl.response_code == 200
+                household[:photo] = StringIO.new(curl.body_str)
+              end
+            end
+          end
+        
+          multi.add(c)
+        end
       end
     end
-    
-    multi.add(c)
   end
+
+  multi.add(c)
+  
+  all
 end
 
 multi.perform
@@ -139,31 +144,32 @@ end.sort do |a, b|
   end
 end
 
-$stdout.write "Generating PDF... "
+$stdout.write "done.\nGenerating PDF... "
 $stdout.flush
   
 doc = Prawn::Document.new(:left_margin => 10, :right_margin => 10, :top_margin => 10, :bottom_margin => 10) do |pdf|
   header_height = 10
   footer_height = 10
-  columns       = 6.0
-  rows          = 5.0
-  padding       = 2.0
+  columns       = 1.0
+  rows          = 1.0
+  padding       = 80.0
   grid_width    = pdf.bounds.width / columns
   grid_height   = (pdf.bounds.height - header_height - footer_height) / rows
   box_width     = grid_width - (padding * 2)
   box_height    = grid_height - (padding * 2)
   pages         = (households.size.to_f / (columns * rows)).ceil()
-  pdf.font_size = 8
+  pdf.font_size = 18
   info_count    = 4
   info_height   = pdf.font.height*info_count
   date          = Time.new().strftime("%m/%d/%Y")
   title         = ward_and_stake["wardName"]
+  placeholder   = File.join(File.dirname(__FILE__), 'extra', 'placeholder.jpg')
   
   (0...pages).each do |page|
     pdf.start_new_page unless page == 0
-    pdf.draw_text(title, :at => [pdf.bounds.right/2 - pdf.width_of(title, :size => 12)/2, pdf.bounds.top - header_height + padding], :size => 12)
-    pdf.draw_text("For Church Use Only", :at => [pdf.bounds.right/2 - pdf.width_of("For Church Use Only")/2, pdf.bounds.bottom])
-    pdf.draw_text(date, :at => [pdf.bounds.right - pdf.width_of(date), pdf.bounds.bottom])
+    #pdf.draw_text(title, :at => [pdf.bounds.right/2 - pdf.width_of(title, :size => 12)/2, pdf.bounds.top - header_height + padding], :size => 12)
+    #pdf.draw_text("For Church Use Only", :at => [pdf.bounds.right/2 - pdf.width_of("For Church Use Only")/2, pdf.bounds.bottom])
+    #pdf.draw_text(date, :at => [pdf.bounds.right - pdf.width_of(date), pdf.bounds.bottom])
     (0...rows).each do |row|
       y = pdf.bounds.top - row*grid_height - header_height
       (0...columns).each do |column|
@@ -178,10 +184,12 @@ doc = Prawn::Document.new(:left_margin => 10, :right_margin => 10, :top_margin =
             info.push(household[:address])
             info.push(household[:phone_number])
             info.push(household[:email])
+
+            photo = household[:photo] || placeholder
             
-            pdf.image(household[:photo] ? household[:photo] : File.join(File.dirname(__FILE__), 'extra', 'placeholder.jpg'), :position => :center, :fit => [box_width, box_height - (padding*2 + info_height)] )
+            pdf.image(photo, :position => :center, :fit => [box_width, box_height - (padding*2 + info_height)] )
             
-            pdf.bounding_box([pdf.bounds.left, pdf.bounds.bottom + info_height], :height => info_height+1, :width => pdf.bounds.width) do
+            pdf.bounding_box([pdf.bounds.left, pdf.bounds.bottom + info_height], :height => info_height, :width => pdf.bounds.width) do
               info.compact.each do |line|
                 pdf.text(line, :align => :center, :size => pdf.font_size.downto(1).detect() { |size| pdf.width_of(line.to_s, :size => size) <= box_width })
               end
@@ -194,6 +202,5 @@ doc = Prawn::Document.new(:left_margin => 10, :right_margin => 10, :top_margin =
 end
 
 doc.render_file("#{ward_and_stake["wardName"]}.pdf")
-puts "done."
-puts "Finished in #{Time.now - start} seconds."
+$stdout.write "done.\nFinished in #{Time.now - start} seconds."
 
