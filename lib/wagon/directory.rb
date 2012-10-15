@@ -62,7 +62,7 @@ module Wagon
                   info.push(household.phone_number.value) if options[:phone_number]
                   info.push(household.members.first.email) if options[:email]
                   
-                  pdf.image(household.has_image? ? StringIO.new(household.image_data) : File.join(Wagon::BASE_PATH, 'extra', 'placeholder.jpg'), :position => :center, :fit => [box_width, box_height - (padding*2 + info_height)] )
+                  pdf.image(household.has_image? ? StringIO.new(household.image_data) : File.join('.', 'extra', 'placeholder.jpg'), :position => :center, :fit => [box_width, box_height - (padding*2 + info_height)] )
                   
                   pdf.bounding_box([pdf.bounds.left, pdf.bounds.bottom + info_height], :height => info_height+1, :width => pdf.bounds.width) do
                     info.compact.each do |line|

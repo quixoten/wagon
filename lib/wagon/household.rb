@@ -1,8 +1,10 @@
+# encoding: utf-8
+
+require 'base64'
+
 require 'wagon/address'
 require 'wagon/phone_number'
 require 'wagon/member'
-
-require 'base64'
 
 module Wagon
   class Household

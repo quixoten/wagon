@@ -1,14 +1,14 @@
 BASE_PATH = File.join(File.dirname(__FILE__), '..')
 USER_FILE = File.join(BASE_PATH, 'spec', 'user.dat')
-
+$LOAD_PATH.unshift(BASE_PATH, 'lib')
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.join(BASE_PATH, 'lib'))
-
-require 'spec'
-require 'spec/autorun'
-require 'rubygems'
-require 'wagon'
+require 'rspec'
 require 'highline/import'
+require 'wagon'
+
+# Requires supporting files with custom matchers and macros, etc,
+# in ./support/ and its subdirectories.
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 $user = nil
 
@@ -36,6 +36,6 @@ else
   establish_connection()
 end
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   
 end
