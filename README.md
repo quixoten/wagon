@@ -1,6 +1,6 @@
 # Wagon
 
-TODO: Write a gem description
+Wagon is a Ruby API for the tools and information available on the lds.org website
 
 ## Installation
 
@@ -18,7 +18,15 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+  wagon = Wagon.connect("username", "password")
+  stake = wagon.stake #= <Wagon::Sake#Orem YSA 1st>
+  home_ward = wagon.home_ward #= <Wagon::Ward#Orem YSA 11th>
+
+  stake.wards #= [<Wagon::Ward#Orem YSA 1st>, <Wagon::Ward#Orem YSA 2nd>, ... ]
+  stake.members #= [<Wagon::Member#Devin Christensen>, <Wagon::Member#Douglas Engelbart>, ...]
+  ward.members #= [<Wagon::Member#Devin Christensen>, <Wagon::Member#Yukihiro Matsumoto>, ...]
+```
 
 ## Contributing
 
