@@ -1,11 +1,17 @@
 require 'minitest_helper'
 
-class TestWagon < MiniTest::Unit::TestCase
-  def test_that_it_has_a_version_number
-    refute_nil ::Wagon::VERSION
+describe Wagon do
+  it "has a version number" do
+    refute_nil Wagon::VERSION
   end
 
-  def test_it_does_something_useful
-    assert false
+  describe "#connect" do
+    it "delegates to Wagon::Agent.new" do
+      agent = Object.new
+
+      Wagon::Agent.stub :new, agent do
+        Wagon.connect("name", "pass").must_be_same_as agent
+      end
+    end
   end
 end
