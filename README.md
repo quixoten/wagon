@@ -19,12 +19,12 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-  wagon = Wagon.new("username", "password")
-  wagon.current_user #= <Wagon::Member#Devin Christensen>
-  wagon.stake #= <Wagon::Sake#The 1st Stake>
-  wagon.wards #= [<Wagon::Ward#The 1st Ward>, <Wagon::Ward#The 2nd Ward>, ... ]
+  hub = Wagon.new("username", "password")
+  hub.current_user #= <Wagon::Member#Devin Christensen>
+  hub.stake #= <Wagon::Sake#The 1st Stake>
+  hub.wards #= [<Wagon::Ward#The 1st Ward>, <Wagon::Ward#The 2nd Ward>, ... ]
 
-  home_ward = wagon.home_ward #= <Wagon::Ward#The 1st Ward>
+  home_ward = hub.home_ward #= <Wagon::Ward#The 1st Ward>
   members = home_ward.members #= [<Wagon::Member#Devin Christensen>, <Wagon::Member#Yukihiro Matsumoto>, ...]
 ```
 

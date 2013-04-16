@@ -1,7 +1,8 @@
-require "wagon/version"
+require "wagon/connection"
 require "wagon/constants"
-require "wagon/agent"
+require "wagon/hub"
 require "wagon/stake"
+require "wagon/version"
 
 module Wagon
 
@@ -12,6 +13,6 @@ module Wagon
   InvalidCredentials = Class.new(Error)
 
   def self.connect(username, password)
-    Agent.new(username, password)
+    Hub.new(username, password)
   end
 end

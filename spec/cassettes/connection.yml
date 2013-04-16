@@ -1,0 +1,99 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://signin.lds.org/login.html
+    body:
+      encoding: US-ASCII
+      string: username=username&password=valid_password
+    headers:
+      Accept:
+      - '*/*; q=0.5, application/xml'
+      Accept-Encoding:
+      - gzip, deflate
+      Content-Length:
+      - '39'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 16 Apr 2013 06:45:17 GMT
+      Server:
+      - Apache/2.2.21 (Linux/SUSE)
+      Set-Cookie:
+      - ObSSOCookie=3lCYbLQjBjmVVBZANOO3BFs8rd91x6L%2B7nmvSe3s9G058gZujR%2B%2FZoxMXrqZH0UWoAH82eYD%2BBxngpRJ1Vl%2FPMqv22anUvZjaUAuj%2FBHsHhelY0eW0s7qk6g1mUN395KAydU4Iugj7DU3NPBv%2Bc1VrlWOJ2SJPLlAgYnpyed%2FVYmpUFB7QqzTCkc%2BoLAJCYwNP70O86kn8uD09z6znHrdu9iM0Lm8442pqGENts9xT3vXUqC6v4tDDedTc%2FRheh%2Bc1vIbvGHyzd9aVpBvx84WVtxuxjEARLN8ZBxR6tngFo%3D;secure;
+        httponly; path=/; domain=.lds.org
+      Last-Modified:
+      - Tue, 17 Apr 2012 21:17:32 GMT
+      Etag:
+      - '"2cd2-16a-4bde677825300"'
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '362'
+      Content-Type:
+      - text/html
+    body:
+      encoding: UTF-8
+      string: "<!DOCTYPE HTML>\n<html><head>        \n<meta http-equiv=\"content-type\"
+        content=\"text/html;charset=UTF-8\">\n<meta http-equiv=\"refresh\" content=\"0;
+        url=https://www.lds.org/\">\n<meta http-equiv=\"cache-control\" content=\"no-cache,
+        must-revalidate\">\n<meta http-equiv=\"expires\" content=\"0\">\n<meta http-equiv=\"pragma\"
+        content=\"no-cache\">\n</head>\n<body>\n1830\n</body>\n</html>\n"
+    http_version: 
+  recorded_at: Tue, 16 Apr 2013 06:45:17 GMT
+- request:
+    method: post
+    uri: https://signin.lds.org/login.html
+    body:
+      encoding: US-ASCII
+      string: username=username&password=invalid_password
+    headers:
+      Accept:
+      - '*/*; q=0.5, application/xml'
+      Accept-Encoding:
+      - gzip, deflate
+      Content-Length:
+      - '43'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 302
+      message: Found
+    headers:
+      Date:
+      - Tue, 16 Apr 2013 06:45:18 GMT
+      Server:
+      - Apache/2.2.21 (Linux/SUSE)
+      Set-Cookie:
+      - ObFormLoginCookie=wh%3Dsignin.lds.org%20wu%3D%2Flogin.html%20wo%3D2%20rh%3Dhttps%3A%2F%2Fsignin.lds.org%20ru%3D%252Flogin.html;
+        path=/login.html
+      - ObSSOCookie=loggedoutcontinue;secure; httponly; path=/; domain=.lds.org
+      Location:
+      - /SSOSignIn/
+      Content-Length:
+      - '195'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+    body:
+      encoding: UTF-8
+      string: |
+        <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+        <html><head>
+        <title>302 Found</title>
+        </head><body>
+        <h1>Found</h1>
+        <p>The document has moved <a href="/SSOSignIn/">here</a>.</p>
+        </body></html>
+    http_version: 
+  recorded_at: Tue, 16 Apr 2013 06:45:18 GMT
+recorded_with: VCR 2.4.0

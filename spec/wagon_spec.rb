@@ -1,4 +1,4 @@
-require 'minitest_helper'
+require 'spec_helper'
 
 describe Wagon do
   it "has a version number" do
@@ -7,10 +7,10 @@ describe Wagon do
 
   describe "#connect" do
     it "delegates to Wagon::Agent.new" do
-      agent = Object.new
+      connection = Object.new
 
-      Wagon::Agent.stub :new, agent do
-        Wagon.connect("name", "pass").must_be_same_as agent
+      Wagon::Hub.stub :new, connection do
+        Wagon.connect("name", "pass").must_be_same_as connection
       end
     end
   end
