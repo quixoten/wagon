@@ -19,13 +19,26 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-  hub = Wagon.new("username", "password")
-  hub.current_user #= <Wagon::Member#Devin Christensen>
-  hub.stake #= <Wagon::Sake#The 1st Stake>
-  hub.wards #= [<Wagon::Ward#The 1st Ward>, <Wagon::Ward#The 2nd Ward>, ... ]
+  user = Wagon::User.new("username", "password") #=> <Wagon::User#Devin>
+  user.wards #=> [<Wagon::Ward#1st Ward>, <Wagon::Ward#2nd Ward>, ... ]
+  user.home_ward #=> <Wagon::Ward#1st Ward>
 
-  home_ward = hub.home_ward #= <Wagon::Ward#The 1st Ward>
-  members = home_ward.members #= [<Wagon::Member#Devin Christensen>, <Wagon::Member#Yukihiro Matsumoto>, ...]
+  stake = user.stake #=> <Wagon::Sake#1st Stake>
+  stake.wards #=> [<Wagon::Ward#1st Ward>, <Wagon::Ward#2nd Ward>, ... ]
+  stake.members #=> [<Wagon::Member#Devin>, <Wagon::Member#Tyden>, ...]
+  stake.to_pdf filename: "#{stake.name}.pdf", pictures: true
+
+  home_ward = user.home_ward
+  home_ward.members #=> [<Wagon::Member#Devin>, <Wagon::Member#Tyden>, ...]
+  home_ward.to_pdf do |pdf|
+    pdf.filename = "#{home_ward.name}.pdf"
+    pdf.columns = 5
+    pdf.rows = 6
+    pdf.email = true
+    pdf.address = false
+    pdf.phone_number = true
+    pdf.pictures = true
+  end
 ```
 
 ## Contributing
