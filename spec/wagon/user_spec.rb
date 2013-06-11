@@ -14,7 +14,7 @@ describe Wagon::User, :class do
     it "needs to fail with an invalid username or password" do
       proc {
         Wagon::User.new "username", "invalid_password"
-      }.must_raise Wagon::InvalidCredentials
+      }.must_raise ArgumentError
     end
   end
 end

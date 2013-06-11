@@ -1,17 +1,14 @@
-require "rest-client"
+require 'rest-client'
 
-require "wagon/uri"
-require "wagon/ward"
-require "wagon/stake"
+require 'wagon/request/login'
+require 'wagon/ward'
+require 'wagon/stake'
 
 module Wagon
   class User
-    include Wagon::URI
-
     def initialize(username, password)
-      post(LOGIN, username: username, password: password)
-    rescue RestClient::Found
-      raise InvalidCredentials, "Username and/or password did not match lds.org records."
+      req = Request::Login.new(username, password)
+      req.send_with_cookies!(@cookies)
     end
 
     def wards
