@@ -7,7 +7,7 @@ module Wagon::Request
     method :post
     uri "https://signin.lds.org/login.html"
 
-    def send(*args)
+    def send(*)
       super
     rescue RestClient::Found
       raise ArgumentError, 'Username and/or password did not match lds.org records.'
